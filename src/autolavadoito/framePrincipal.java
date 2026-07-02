@@ -1,30 +1,27 @@
 package AutoLavadoITO;
 
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Graphics;
-import java.awt.Image;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Clase Vista (framePrincipal): Maneja la UI, la captura inmediata de campos vacíos,
+ * e interpreta los códigos de error del controlador para mostrárselos al usuario.
+ */
 public class framePrincipal extends javax.swing.JFrame {
     
+    // --- Atributos de Configuración y UI ---
     private Controlador controlador;
     private javax.swing.JTabbedPane jTabbedPane1;
-    
-    // Instancia de la clase que pintará el fondo de la ventana
     private FondoPanel fondo = new FondoPanel();
     
-    // TAB 1
+    // TAB 1: Registro completo inicial
     private javax.swing.JPanel panelRegistro;
     private javax.swing.JTextField txtNombreCli, txtApellidoCli, txtTelefonoCli;
     private javax.swing.JTextField txtMarca, txtModelo, txtColor, txtObservacionesV;
     private javax.swing.JComboBox<String> cmbTipoVehiculo;
     private javax.swing.JButton btnRegistrarCliYVeh;
 
-    // TAB 2
+    // TAB 2: Agregar auto a cliente existente
     private javax.swing.JPanel panelAgregarAuto;
     private javax.swing.JTextField txtIdClienteBuscar;
     private javax.swing.JLabel lblCliEncontrado;
@@ -33,7 +30,7 @@ public class framePrincipal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbTipoVehiculo2;
     private javax.swing.JButton btnAgregarSoloAuto;
 
-    // TAB 3: Órdenes
+    // TAB 3: Gestión de Órdenes y Servicios adicionales
     private javax.swing.JPanel panelOrdenes;
     private javax.swing.JTextField txtIdClienteOrd, txtIdAutoOrd, txtFolioServicio;
     private javax.swing.JCheckBox chkReserva;
@@ -41,36 +38,39 @@ public class framePrincipal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbServiciosDisponibles;
     private javax.swing.JButton btnCrearOrden, btnAgregarServicio;
 
-    // TAB 4: Salida
+    // TAB 4: Módulo de Facturación, Caja y visualización de Ticket
     private javax.swing.JPanel panelSalida;
     private javax.swing.JTextField txtFolioCobro, txtMontoPago;
     private javax.swing.JComboBox<String> cmbTipoPago;
     private javax.swing.JButton btnCobrar;
     private javax.swing.JTextArea txtAreaTicket;
 
-    // TAB 5
+    // TAB 5: Bitácora de control interno (Tabla global)
     private javax.swing.JPanel panelTabla;
     private javax.swing.JTable tblGeneral;
     private javax.swing.JButton btnActualizarTabla;
 
+    /**
+     * Inicializa los elementos gráficos vinculando el controlador compartido.
+     */
     public framePrincipal(Controlador controlador) {
         this.controlador = controlador;
+        this.setContentPane(fondo); // Aplica el fondo decorativo personalizado
         
-        // 1. Establecemos el panel personalizado con la imagen como el contenedor principal
-        this.setContentPane(fondo);
-        
-        // 2. Inicializamos los componentes sobre el nuevo fondo
         initComponents();
         cargarServiciosCombo();
         configurarEventosPago();
         configurarEventosReserva(); 
-        btnActualizarTablaActionPerformed(null);
+        btnActualizarTablaActionPerformed(null); // Primera carga de la tabla vacía
     }
 
+    /**
+     * Construye toda la interfaz gráfica mediante layouts y componentes de Swing.
+     */
     private void initComponents() {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         
-        // --- TAB 1 ---
+        // --- CONSTRUCCIÓN TAB 1 ---
         panelRegistro = new javax.swing.JPanel(new java.awt.GridLayout(9, 2, 5, 5));
         txtNombreCli = new javax.swing.JTextField(); txtApellidoCli = new javax.swing.JTextField();
         txtTelefonoCli = new javax.swing.JTextField(); txtMarca = new javax.swing.JTextField();
@@ -90,7 +90,7 @@ public class framePrincipal extends javax.swing.JFrame {
         panelRegistro.add(new javax.swing.JLabel("")); panelRegistro.add(btnRegistrarCliYVeh);
         jTabbedPane1.addTab("1. Cliente Nuevo", panelRegistro);
 
-        // --- TAB 2 ---
+        // --- CONSTRUCCIÓN TAB 2 ---
         panelAgregarAuto = new javax.swing.JPanel(new java.awt.GridLayout(9, 2, 5, 5));
         txtIdClienteBuscar = new javax.swing.JTextField();
         btnBuscarCli = new javax.swing.JButton("Buscar Cliente");
@@ -110,7 +110,7 @@ public class framePrincipal extends javax.swing.JFrame {
         panelAgregarAuto.add(new javax.swing.JLabel("")); panelAgregarAuto.add(btnAgregarSoloAuto);
         jTabbedPane1.addTab("2. Auto Nuevo", panelAgregarAuto);
 
-        // --- TAB 3 ---
+        // --- CONSTRUCCIÓN TAB 3 ---
         panelOrdenes = new javax.swing.JPanel(new java.awt.GridLayout(8, 2, 5, 5));
         txtIdClienteOrd = new javax.swing.JTextField(); txtIdAutoOrd = new javax.swing.JTextField();
         chkReserva = new javax.swing.JCheckBox("¿Es Reserva?");
@@ -132,7 +132,7 @@ public class framePrincipal extends javax.swing.JFrame {
         panelOrdenes.add(new javax.swing.JLabel("")); panelOrdenes.add(btnAgregarServicio);
         jTabbedPane1.addTab("3. Generar Orden y Servicios", panelOrdenes);
 
-        // --- TAB 4 ---
+        // --- CONSTRUCCIÓN TAB 4 ---
         panelSalida = new javax.swing.JPanel(new java.awt.BorderLayout());
         javax.swing.JPanel topPanel = new javax.swing.JPanel(new java.awt.GridLayout(4, 2));
         txtFolioCobro = new javax.swing.JTextField();
@@ -150,7 +150,7 @@ public class framePrincipal extends javax.swing.JFrame {
         panelSalida.add(new javax.swing.JScrollPane(txtAreaTicket), java.awt.BorderLayout.CENTER);
         jTabbedPane1.addTab("4. Cobro y Salida", panelSalida);
 
-        // --- TAB 5 ---
+        // --- CONSTRUCCIÓN TAB 5 ---
         panelTabla = new javax.swing.JPanel(new java.awt.BorderLayout());
         tblGeneral = new javax.swing.JTable();
         btnActualizarTabla = new javax.swing.JButton("Actualizar Vistas");
@@ -197,8 +197,7 @@ public class framePrincipal extends javax.swing.JFrame {
                         txtMontoPago.setText("");
                     }
                 }
-            } catch (Exception ex) {
-            }
+            } catch (Exception ex) { }
         });
     }
 
@@ -213,6 +212,9 @@ public class framePrincipal extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * EVENTO TAB 1: Intenta registrar un cliente y su respectivo auto al mismo tiempo.
+     */
     private void btnRegistrarCliYVehActionPerformed(java.awt.event.ActionEvent evt) {
         String nombre = txtNombreCli.getText().trim();
         String apellido = txtApellidoCli.getText().trim();
@@ -221,128 +223,168 @@ public class framePrincipal extends javax.swing.JFrame {
         String modelo = txtModelo.getText().trim();
         String color = txtColor.getText().trim();
 
+        // VALIDACIÓN INTERNA DE LA VISTA: Impedir procesamiento si hay campos en blanco
         if(nombre.isEmpty() || apellido.isEmpty() || tel.isEmpty() || marca.isEmpty() || modelo.isEmpty() || color.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Rellene todas las casillas.", "Casillas vacías", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if(!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$") || !apellido.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
-            JOptionPane.showMessageDialog(this, "El nombre y apellido no pueden contener números ni signos.", "Error", JOptionPane.ERROR_MESSAGE);
+
+        // Envío de datos al controlador evaluando respuestas numéricas de error
+        int idCli = controlador.crearCliente(nombre, apellido, tel);
+        if (idCli == -2) {
+            JOptionPane.showMessageDialog(this, "El nombre y apellido no pueden contener números ni signos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else if (idCli == -3) {
+            JOptionPane.showMessageDialog(this, "El teléfono solo debe contener 10 dígitos numéricos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if(!tel.matches("^\\d+$")) {
-            JOptionPane.showMessageDialog(this, "El teléfono solo debe contener números.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if(!tel.matches("\\d{10}")) {
-            JOptionPane.showMessageDialog(this, "El teléfono solo debe contener 10 digitos w.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        String regexAlfaNumerico = "^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s]+$";
-        if(!marca.matches(regexAlfaNumerico) || !modelo.matches(regexAlfaNumerico) || !color.matches(regexAlfaNumerico)) {
+
+        int idAuto = controlador.registrarVehiculo(idCli, marca, modelo, color, cmbTipoVehiculo.getSelectedItem().toString(), txtObservacionesV.getText());
+        if (idAuto == -4) {
             JOptionPane.showMessageDialog(this, "La marca, modelo y color del auto no deben contener signos especiales.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        int idCli = controlador.crearCliente(nombre, apellido, tel);
-        if (idCli != -1) {
-            int idAuto = controlador.registrarVehiculo(idCli, marca, modelo, color, cmbTipoVehiculo.getSelectedItem().toString(), txtObservacionesV.getText());
-            JOptionPane.showMessageDialog(this, "¡Éxito!\nTu ID Cliente es: " + idCli + "\nEl ID de Auto es: " + idAuto);
-            txtNombreCli.setText(""); txtApellidoCli.setText(""); txtTelefonoCli.setText(""); txtMarca.setText(""); txtModelo.setText(""); txtColor.setText(""); txtObservacionesV.setText("");
+        JOptionPane.showMessageDialog(this, "¡Éxito!\nTu ID Cliente es: " + idCli + "\nEl ID de Auto es: " + idAuto);
+        
+        // Limpieza de campos
+        txtNombreCli.setText(""); txtApellidoCli.setText(""); txtTelefonoCli.setText(""); 
+        txtMarca.setText(""); txtModelo.setText(""); txtColor.setText(""); txtObservacionesV.setText("");
+    }
+
+    /**
+     * EVENTO TAB 2: Busca un cliente por su ID.
+     */
+    private void btnBuscarCliActionPerformed(java.awt.event.ActionEvent evt) {
+        String idStr = txtIdClienteBuscar.getText().trim();
+        if(idStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un ID Cliente.");
+            return;
+        }
+        
+        try {
+            Cliente c = controlador.buscarClientePorId(Integer.parseInt(idStr));
+            if(c != null) lblCliEncontrado.setText("Cliente: " + c.getNombre() + " " + c.getApellido());
+            else lblCliEncontrado.setText("No encontrado.");
+        } catch(NumberFormatException e) { 
+            JOptionPane.showMessageDialog(this, "Ingrese un ID numérico válido.", "Error", JOptionPane.ERROR_MESSAGE); 
         }
     }
 
-    private void btnBuscarCliActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            Cliente c = controlador.buscarClientePorId(Integer.parseInt(txtIdClienteBuscar.getText().trim()));
-            if(c != null) lblCliEncontrado.setText("Cliente: " + c.getNombre() + " " + c.getApellido());
-            else lblCliEncontrado.setText("No encontrado.");
-        } catch(Exception e) { JOptionPane.showMessageDialog(this, "Ingrese un ID numérico válido."); }
-    }
-
+    /**
+     * EVENTO TAB 2: Agrega un auto extra a un cliente existente.
+     */
     private void btnAgregarSoloAutoActionPerformed(java.awt.event.ActionEvent evt) {
+        String idStr = txtIdClienteBuscar.getText().trim();
+        String marca = txtMarca2.getText().trim();
+        String modelo = txtModelo2.getText().trim();
+        String color = txtColor2.getText().trim();
+        String obs = txtObservacionesV2.getText().trim();
+
+        if(idStr.isEmpty() || marca.isEmpty() || modelo.isEmpty() || color.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El ID del cliente, Marca, Modelo y Color son obligatorios.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
-            int idCli = Integer.parseInt(txtIdClienteBuscar.getText().trim());
-            String marca = txtMarca2.getText().trim();
-            String modelo = txtModelo2.getText().trim();
-            String color = txtColor2.getText().trim();
-            String obs = txtObservacionesV2.getText().trim();
-
-            if(marca.isEmpty() || modelo.isEmpty() || color.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Marca, Modelo y Color son obligatorios.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            String regexAlfaNumerico = "^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s]+$";
-            if(!marca.matches(regexAlfaNumerico) || !modelo.matches(regexAlfaNumerico) || !color.matches(regexAlfaNumerico)) {
-                JOptionPane.showMessageDialog(this, "La marca, modelo y color no deben contener signos especiales.", "Error de formato", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
+            int idCli = Integer.parseInt(idStr);
             int idAuto = controlador.registrarVehiculo(idCli, marca, modelo, color, cmbTipoVehiculo2.getSelectedItem().toString(), obs);
-            if(idAuto != -1) {
+            
+            // Análisis de respuestas condicionales del controlador
+            if(idAuto == -1) {
+                JOptionPane.showMessageDialog(this, "No se encontró el cliente con ID: " + idCli, "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (idAuto == -4) {
+                JOptionPane.showMessageDialog(this, "La marca, modelo y color no deben contener signos especiales.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            } else {
                 JOptionPane.showMessageDialog(this, "Auto agregado.\nEl ID de este Auto es: " + idAuto);
                 txtMarca2.setText(""); txtModelo2.setText(""); txtColor2.setText(""); txtObservacionesV2.setText("");
-            } else { JOptionPane.showMessageDialog(this, "No se encontró cliente."); }
-        } catch(Exception e) { JOptionPane.showMessageDialog(this, "ID inválido o campos vacíos.", "Error", JOptionPane.ERROR_MESSAGE); }
+            }
+        } catch(NumberFormatException e) { 
+            JOptionPane.showMessageDialog(this, "El ID del Cliente debe ser un número entero válido.", "Error", JOptionPane.ERROR_MESSAGE); 
+        }
     }
 
+    /**
+     * EVENTO TAB 3: Genera el folio base de la orden.
+     */
     private void btnCrearOrdenActionPerformed(java.awt.event.ActionEvent evt) {
+        String idCliStr = txtIdClienteOrd.getText().trim();
+        String idAutoStr = txtIdAutoOrd.getText().trim();
+
+        if(idCliStr.isEmpty() || idAutoStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Los IDs de Cliente y de Auto son obligatorios.");
+            return;
+        }
+
         try {
-            Vehiculo v = controlador.buscarVehiculoPorIds(Integer.parseInt(txtIdClienteOrd.getText()), Integer.parseInt(txtIdAutoOrd.getText()));
-            if(v != null) {
-                java.util.Date fecha = null;
-                if(chkReserva.isSelected()) {
-                    fecha = jdFechaReserva.getDate();
-                    if(fecha == null) {
-                        JOptionPane.showMessageDialog(this, "Por favor seleccione una fecha en el calendario.");
-                        return;
-                    }
+            Vehiculo v = controlador.buscarVehiculoPorIds(Integer.parseInt(idCliStr), Integer.parseInt(idAutoStr));
+            if(v == null) {
+                JOptionPane.showMessageDialog(this, "Vehículo o Cliente no encontrado.");
+                return;
+            }
 
-                    Calendar calHoy = Calendar.getInstance();
-                    calHoy.set(Calendar.HOUR_OF_DAY, 0);
-                    calHoy.set(Calendar.MINUTE, 0);
-                    calHoy.set(Calendar.SECOND, 0);
-                    calHoy.set(Calendar.MILLISECOND, 0);
-                    Date hoy = calHoy.getTime();
-
-                    if(fecha.before(hoy)) {
-                        JOptionPane.showMessageDialog(this, "No se permiten fechas anteriores al día de hoy.", "Fecha Inválida", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-                int folioGen = controlador.crearOrden(v, chkReserva.isSelected(), fecha, "");
-                
+            Date fecha = chkReserva.isSelected() ? jdFechaReserva.getDate() : null;
+            int folioGen = controlador.crearOrden(v, chkReserva.isSelected(), fecha, "");
+            
+            if (folioGen == -5) {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione una fecha en el calendario.");
+            } else if (folioGen == -6) {
+                JOptionPane.showMessageDialog(this, "No se permiten fechas anteriores al día de hoy.", "Fecha Inválida", JOptionPane.ERROR_MESSAGE);
+            } else {
                 JOptionPane.showMessageDialog(this, "ORDEN CREADA EXITOSAMENTE.\n\n** TU FOLIO ES: " + folioGen + " **\n\nUsa este número para añadir servicios y cobrar.");
-                
                 txtFolioServicio.setText(String.valueOf(folioGen));
                 txtFolioCobro.setText(String.valueOf(folioGen));
-                
-            } else { JOptionPane.showMessageDialog(this, "Vehículo o Cliente no encontrado."); }
-        } catch(Exception e) { JOptionPane.showMessageDialog(this, "Revisa los IDs.", "Error", JOptionPane.ERROR_MESSAGE); }
+            }
+        } catch(NumberFormatException e) { 
+            JOptionPane.showMessageDialog(this, "Los campos de IDs deben ser números enteros.", "Error", JOptionPane.ERROR_MESSAGE); 
+        }
     }
 
+    /**
+     * EVENTO TAB 3: Vincula servicios del catálogo al folio.
+     */
     private void btnAgregarServicioActionPerformed(java.awt.event.ActionEvent evt) {
+        String folioStr = txtFolioServicio.getText().trim();
+        if(folioStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese un Folio de Orden.");
+            return;
+        }
+
         try {
-            int folio = Integer.parseInt(txtFolioServicio.getText().trim());
+            int folio = Integer.parseInt(folioStr);
             Orden o = controlador.buscarOrdenPorFolio(folio);
             
             if (o != null) {
                 o.agregarServicio(controlador.getCatalogoServicios().get(cmbServiciosDisponibles.getSelectedIndex()));
                 JOptionPane.showMessageDialog(this, "Servicio añadido a la Orden #" + folio + ".\nTotal a pagar acumulado: $" + o.getCostoFinal());
-            } else { JOptionPane.showMessageDialog(this, "No hay una orden activa con el Folio: " + folio); }
-        } catch(Exception e) { JOptionPane.showMessageDialog(this, "Por favor ingrese un Folio válido."); }
+            } else { 
+                JOptionPane.showMessageDialog(this, "No hay una orden activa con el Folio: " + folio); 
+            }
+        } catch(NumberFormatException e) { 
+            JOptionPane.showMessageDialog(this, "Por favor ingrese un Folio numérico válido."); 
+        }
     }
 
+    /**
+     * EVENTO TAB 4: Módulo de Cobro y liquidación final.
+     */
     private void btnCobrarActionPerformed(java.awt.event.ActionEvent evt) {
+        String folioStr = txtFolioCobro.getText().trim();
+        String pagoStr = txtMontoPago.getText().trim();
+
+        if(folioStr.isEmpty() || pagoStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Folio y Monto son obligatorios.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
-            int folio = Integer.parseInt(txtFolioCobro.getText().trim());
-            double pago = Double.parseDouble(txtMontoPago.getText().trim());
+            int folio = Integer.parseInt(folioStr);
+            double pago = Double.parseDouble(pagoStr);
             String tipoPago = cmbTipoPago.getSelectedItem().toString();
             
             Orden o = controlador.buscarOrdenPorFolio(folio);
             if (o == null) {
-                JOptionPane.showMessageDialog(this, "La orden específica no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La orden específica no existe o ya fue pagada.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -354,27 +396,19 @@ public class framePrincipal extends javax.swing.JFrame {
             Ticket t = controlador.procesarSalidaYTicket(folio, pago, tipoPago);
             if (t != null) {
                 txtAreaTicket.setText(t.toString());
-                btnActualizarTablaActionPerformed(null);
-            } else { JOptionPane.showMessageDialog(this, "Orden #" + folio + " ya fue cobrada."); }
-        } catch (Exception e) { JOptionPane.showMessageDialog(this, "Folio o monto inválido.", "Error", JOptionPane.ERROR_MESSAGE); }
+                btnActualizarTablaActionPerformed(null); // Refresca automáticamente el JTable
+            } else { 
+                JOptionPane.showMessageDialog(this, "Error al procesar la salida."); 
+            }
+        } catch (NumberFormatException e) { 
+            JOptionPane.showMessageDialog(this, "Folio o monto con formato inválido.", "Error", JOptionPane.ERROR_MESSAGE); 
+        }
     }
 
+    /**
+     * EVENTO TAB 5: Actualiza los registros visuales de la tabla.
+     */
     private void btnActualizarTablaActionPerformed(java.awt.event.ActionEvent evt) {
         tblGeneral.setModel(controlador.generarModeloTablaOrdenes());
-    }
-}
-
-// CLASE INTERNA PARA DIBUJAR LA IMAGEN COMO FONDO DEL JFRAME
-class FondoPanel extends javax.swing.JPanel {
-    private java.awt.Image imagen;
-
-    @Override
-    protected void paintComponent(java.awt.Graphics g) {
-        super.paintComponent(g);
-        java.net.URL url = getClass().getResource("/imagenes/anuncio.jfif");
-        if (url != null) {
-            imagen = new javax.swing.ImageIcon(url).getImage();
-            g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
-        }
     }
 }
