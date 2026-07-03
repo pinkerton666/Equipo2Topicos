@@ -1,2 +1,0 @@
-sistemalavaautos.Cliente
-AutoLavadoITO.Cliente

@@ -1,2 +1,0 @@
-AutoLavadoITO.framePrincipal
-sistemalavaautos.framePrincipal

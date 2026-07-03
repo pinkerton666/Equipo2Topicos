@@ -1,4 +1,0 @@
-sistemalavaautos.Controlador
-AutoLavadoITO.Controlador
-sistemalavaautos.Controlador$1
-AutoLavadoITO.Controlador$1
